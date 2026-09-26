@@ -108,10 +108,11 @@ def table_update_large():
 # ------------------------------------------------------------------------------------------
 
 table_update_small()
+#table_update_large()
 table.show()
 #table2.show()
 
-def header_clicked(index):
+def header_clicked_s(index):
     if index == 0:
         data_small.sort(key=lambda item: item["id"])
     elif index == 1:
@@ -124,19 +125,37 @@ def header_clicked(index):
         data_small.sort(key=lambda item: item["polygones"])
     elif index == 5:
         data_small.sort(key=lambda item: item["statut"])
-    elif index == 6:
-        data_small.sort(key=lambda item: item["auteur"])
-    elif index == 7:
-        data_small.sort(key=lambda item: item["date_creation"])
-    elif index == 8:
-        data_small.sort(key=lambda item: item["prix"])
-    elif index == 9:
-        data_small.sort(key=lambda item: item["taille_fichier"])
 
     table_update_small()
     table.show()
-    
-table.horizontalHeader().sectionClicked.connect(header_clicked)
+
+'''def header_clicked_l(index):
+    if index == 0:
+        data_large.sort(key=lambda item: item["id"])
+    elif index == 1:
+        data_large.sort(key=lambda item: item["nom"])
+    elif index == 2:
+        data_large.sort(key=lambda item: item["categorie"])
+    elif index == 3:
+        data_large.sort(key=lambda item: item["format"])
+    elif index == 4:
+        data_large.sort(key=lambda item: item["polygones"])
+    elif index == 5:
+        data_large.sort(key=lambda item: item["statut"])
+    elif index == 6:
+        data_large.sort(key=lambda item: item["auteur"])
+    elif index == 7:
+        data_large.sort(key=lambda item: item["date_creation"])
+    elif index == 8:
+        data_large.sort(key=lambda item: item["prix"])
+    elif index == 9:
+        data_large.sort(key=lambda item: item["taille_fichier"])
+
+    table_update_large()
+    table2.show()
+'''
+table.horizontalHeader().sectionClicked.connect(header_clicked_s)
+#table2.horizontalHeader().sectionClicked.connect(header_clicked_l)
 
 
 sys.exit(app.exec())
