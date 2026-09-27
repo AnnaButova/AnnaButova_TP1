@@ -1,7 +1,7 @@
 import os
 import json
 import sys
-from pathlib import Path
+from pathlib import Path # for working paths
 
 # Imports for UI
 from PySide6.QtWidgets import (
@@ -13,10 +13,11 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget
 ) 
+from PySide6.QtCore import Qt
 
 # Find the json files ----------------------
-path_small = Path("data_small.json")
-path_large = Path("data_large.json")
+path_small = Path("data_small.json") # path to small json file
+path_large = Path("data_large.json") # path to large json file
 
 if path_small.exists() or path_large.exists(): # verification to see if json file exists/can be found
     print("Json file found!:)")
@@ -40,104 +41,94 @@ except(ValueError, FileNotFoundError): # if file contains an error, show error m
     print("File contains an error! Please check your json file and try again.")
 # ------------------------------------------
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Table")
-
-        table = QTableWidget()
-        table.setRowCount(len(data_small))
-        table.setColumnCount(6)
-        table.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones", "Statut"])
-
-        searchbar = QLineEdit(placeholderText="Search...")
-        container_layout = QVBoxLayout()
-        container_layout.addWidget(searchbar)
-        container_layout.addWidget(table)
-
-        container = QWidget()
-        container.setLayout(container_layout)
-
-        self.setCentralWidget(container)
-
-
-
-
+# Create a window ---------------------
 app = QApplication([]) 
-window = MainWindow()
-window.show()
+window = QMainWindow()
+window.setWindowTitle("Table") # name that shows at the top of the window
+# -------------------------------------
 
-# Table setup ------------------------------------------------------------------------------
-'''table = QTableWidget()
-table.setRowCount(len(data_small))
-table.setColumnCount(6)
-table.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones", "Statut"])
+# Creating a small table --------------
+table = QTableWidget()
+table.setRowCount(len(data_small)) # number of rows in the small table
+table.setColumnCount(6) # number of columns in the small table
+table.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones", "Statut"]) # header labels/column names
+# -------------------------------------
 
-searchbar = QLineEdit(placeholderText="Search devices...")
-container_layout = QVBoxLayout()
-container_layout.addWidget(searchbar)
-'''
-# ------------------------------------------------------------------------------------------
-
-# Table2 setup -----------------------------------------------------------------------------
+# Creating a large table --------------
 table2 = QTableWidget()
 table2.setRowCount(len(data_large))
 table2.setColumnCount(10)
 table2.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones", "Statut", "Auteur", "Date de Creation", "Prix", "Taille du Fichier"])
-# ------------------------------------------------------------------------------------------
+# -------------------------------------
 
-# makes a table for data_small.json --------------------------------------------------------
-'''def table_update_small():
-    for i in range(len(data_small)):
+# Creating a search bar ---------------
+searchbar = QLineEdit(placeholderText="Search...") # placeholder text for search bar
+container_layout = QVBoxLayout() # creating a layout for things that will be added to the window
+container_layout.addWidget(searchbar) # adding search bar to the layout
+container_layout.addWidget(table) # adding small table to the layout <<<<<<<<<<<<<<<<<<<<<<<<<<
+container_layout.addWidget(table2) # adding large table to the layout <<<<<<<<<<<<<<<<<<<<<<<<<
+# -------------------------------------
+
+# Adding search bar and table layout to the main widget --
+container = QWidget() # main widget that will show both the search bar and the table
+container.setLayout(container_layout) # applying earlier created layout to the widget/container
+window.setCentralWidget(container) # adding main widget to the window
+# --------------------------------------------------------
+
+# Filling the small table with values -----
+def table_update_small():
+    for i in range(len(data_small)): # for item in data_small.json
         item = data_small[i]
-        table.setItem(i, 0, QTableWidgetItem(item["id"])) # shows json elements in the row "id"
+        table.setItem(i, 0, QTableWidgetItem(item["id"])) # places item's "id" value in the column "id"
         table.setItem(i, 1, QTableWidgetItem(item["nom"]))
         table.setItem(i, 2, QTableWidgetItem(item["categorie"]))
         table.setItem(i, 3, QTableWidgetItem(item["format"]))
-        table.setItem(i, 4, QTableWidgetItem(str(item["polygones"]))) # shows polygons (int) as a string (str)
+        table.setItem(i, 4, QTableWidgetItem(str(item["polygones"]))) # shows "polygons" value (int) as a string (str)
         table.setItem(i, 5, QTableWidgetItem(item["statut"]))
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------
 
-# makes a table for data_large.json --------------------------------------------------------
+# Filling the large table with values -----
 def table_update_large():
     for i in range(len(data_large)):
         item = data_large[i]
-        table2.setItem(i, 0, QTableWidgetItem(item["id"])) # shows json elements in the row "id"
+        table2.setItem(i, 0, QTableWidgetItem(item["id"])) # places item's "id" value in the column "id"
         table2.setItem(i, 1, QTableWidgetItem(item["nom"]))
         table2.setItem(i, 2, QTableWidgetItem(item["categorie"]))
         table2.setItem(i, 3, QTableWidgetItem(item["format"]))
-        table2.setItem(i, 4, QTableWidgetItem(str(item["polygones"]))) # shows polygons (int) as a string (str)
+        table2.setItem(i, 4, QTableWidgetItem(str(item["polygones"]))) # shows "polygons" value (int) as a string (str)
         table2.setItem(i, 5, QTableWidgetItem(item["statut"]))
         table2.setItem(i, 6, QTableWidgetItem(item["auteur"]))
         table2.setItem(i, 7, QTableWidgetItem(item["date_creation"]))
-        table2.setItem(i, 8, QTableWidgetItem(str(item["prix"])))
+        table2.setItem(i, 8, QTableWidgetItem(str(item["prix"]))) # shows "prix" value (float) as a string (str)
         table2.setItem(i, 9, QTableWidgetItem(item["taille_fichier"]))
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------
 
-table_update_small()
-#table_update_large()
-table.show()
-searchbar.show()
-#table2.show()
+user_input = searchbar.text()
 
-def header_clicked_s(index):
-    if index == 0:
-        data_small.sort(key=lambda item: item["id"])
-    elif index == 1:
-        data_small.sort(key=lambda item: item["nom"])
-    elif index == 2:
-        data_small.sort(key=lambda item: item["categorie"])
-    elif index == 3:
-        data_small.sort(key=lambda item: item["format"])
-    elif index == 4:
-        data_small.sort(key=lambda item: item["polygones"])
-    elif index == 5:
-        data_small.sort(key=lambda item: item["statut"])
+table_update_small() # recalculates the placement of items in the small table
+table_update_large() # recalculates the placement of items in the large table
+
+
+#table.item(i, column).setBackground(Qt.lightGray)
+
+window.show()
+
+
+'''columns_s = ["id", "nom", "categorie", "format", "polygones", "statut"] # column indexes
+was_clicked = False
+
+def header_clicked_s(index, was_clicked):
+    if was_clicked == False:
+        data_small.sort(key=lambda item:item[columns_s[index]])
+        was_clicked = True
+    else:
+         data_small.sort(key=lambda item:item[columns_s[index]], reverse=True)
+         was_clicked = False
 
     table_update_small()
-    table.show()
-
+    print(was_clicked)
 '''
+        
 '''def header_clicked_l(index):
     if index == 0:
         data_large.sort(key=lambda item: item["id"])
@@ -161,7 +152,7 @@ def header_clicked_s(index):
         data_large.sort(key=lambda item: item["taille_fichier"])
 
     table_update_large()
-    table2.show()
+    window.show()
 '''
 #table.horizontalHeader().sectionClicked.connect(header_clicked_s)
 #table2.horizontalHeader().sectionClicked.connect(header_clicked_l)
