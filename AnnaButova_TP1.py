@@ -9,7 +9,9 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QTableWidget,
     QTableWidgetItem,
-    QLineEdit
+    QLineEdit,
+    QVBoxLayout,
+    QWidget
 ) 
 
 # Find the json files ----------------------
@@ -38,38 +40,43 @@ except(ValueError, FileNotFoundError): # if file contains an error, show error m
     print("File contains an error! Please check your json file and try again.")
 # ------------------------------------------
 
-'''for i in data_small:
-    for key, value in i.items():
-        print(key, value)
-'''
-'''id_s = [item["polygones"] for item in data_small]
-id_l = [item["id"] for item in data_large]
-id_s.sort(reverse=True)
-'''
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Table")
 
-def my_function():
-    data_small.sort(key=lambda item: item["id"], reverse=True)
-    print("yay!")
+        table = QTableWidget()
+        table.setRowCount(len(data_small))
+        table.setColumnCount(6)
+        table.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones", "Statut"])
+
+        searchbar = QLineEdit(placeholderText="Search...")
+        container_layout = QVBoxLayout()
+        container_layout.addWidget(searchbar)
+        container_layout.addWidget(table)
+
+        container = QWidget()
+        container.setLayout(container_layout)
+
+        self.setCentralWidget(container)
 
 
-# --------------
-'''if input("Yes") or input("yes") or input("YES"):
-    is_reversed = True
-elif input("No") or input("no") or input("NO"):
-    is_reversed = False
-else:
-    print("Please enter yes or no")
-'''
+
 
 app = QApplication([]) 
-# window = QMainWindow()
-
+window = MainWindow()
+window.show()
 
 # Table setup ------------------------------------------------------------------------------
-table = QTableWidget()
+'''table = QTableWidget()
 table.setRowCount(len(data_small))
 table.setColumnCount(6)
 table.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones", "Statut"])
+
+searchbar = QLineEdit(placeholderText="Search devices...")
+container_layout = QVBoxLayout()
+container_layout.addWidget(searchbar)
+'''
 # ------------------------------------------------------------------------------------------
 
 # Table2 setup -----------------------------------------------------------------------------
@@ -80,7 +87,7 @@ table2.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones
 # ------------------------------------------------------------------------------------------
 
 # makes a table for data_small.json --------------------------------------------------------
-def table_update_small():
+'''def table_update_small():
     for i in range(len(data_small)):
         item = data_small[i]
         table.setItem(i, 0, QTableWidgetItem(item["id"])) # shows json elements in the row "id"
@@ -110,6 +117,7 @@ def table_update_large():
 table_update_small()
 #table_update_large()
 table.show()
+searchbar.show()
 #table2.show()
 
 def header_clicked_s(index):
@@ -129,6 +137,7 @@ def header_clicked_s(index):
     table_update_small()
     table.show()
 
+'''
 '''def header_clicked_l(index):
     if index == 0:
         data_large.sort(key=lambda item: item["id"])
@@ -154,7 +163,7 @@ def header_clicked_s(index):
     table_update_large()
     table2.show()
 '''
-table.horizontalHeader().sectionClicked.connect(header_clicked_s)
+#table.horizontalHeader().sectionClicked.connect(header_clicked_s)
 #table2.horizontalHeader().sectionClicked.connect(header_clicked_l)
 
 
