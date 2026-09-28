@@ -14,7 +14,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QLabel
 ) 
-from PySide6.QtCore import Qt
 
 # Find the json files ----------------------
 path_small = Path("data_small.json") # path to small json file
@@ -69,8 +68,10 @@ container_layout.addWidget(searchbar) # adding search bar to the layout
 # -------------------------------------
 
 # Adding table widgets ----------------
-container_layout.addWidget(table) # adding small table to the layout <<<<<<<<<<<<<<<<<<<<<<<<<< change depending on if you wanna see small or large table
-container_layout.addWidget(table2) # adding large table to the layout <<<<<<<<<<<<<<<<<<<<<<<<<
+def add_table_s():
+    container_layout.addWidget(table) # adding small table to the layout
+def add_table_l():
+    container_layout.addWidget(table2) # adding large table to the layout
 # -------------------------------------
 
 # Bottom Info Small table -------------------------
@@ -141,9 +142,24 @@ def table_update_large():
 table_update_small() # recalculates the placement of items in the small table
 table_update_large() # recalculates the placement of items in the large table
 
+table_shown = input("Which table would you like to see?\n1 - Small\n2 - Large\n").lower()
 
+while table_shown != "1" or table_shown != "small" or table_shown != "2" or table_shown != "large":
+    if table_shown == "1" or table_shown == "small":
+        add_table_s()
+        show_info_s() # shows small table info
+        window.show() # shows the small table
+        break
 
-window.show() # shows the window
+    elif table_shown == "2" or table_shown == "large":
+        add_table_l()
+        show_info_l() # shows large table info
+        window.show() # shows the large table
+        break
+    else:
+        print("Invalid answer. Please try again!") # in case of invalid answer, shows error message
+        break
+
 
 # Sorting system small ------------------------------------------------------
 columns_s = ["id", "nom", "categorie", "format", "polygones", "statut"] # column indexes
@@ -165,7 +181,7 @@ def header_clicked_s(index):
 
 # Sorting system large ------------------------------------------------------
 columns_l = ["id", "nom", "categorie", "format", "polygones", "statut", "auteur", "date_creation", "prix", ] # column indexes
-was_clicked_l = False # state of button (if it has been clicked)
+was_clicked_l = False # state of button (if it has been clicked) for the large table
 
 def header_clicked_l(index):
 
