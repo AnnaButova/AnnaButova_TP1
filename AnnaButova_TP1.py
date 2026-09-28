@@ -202,10 +202,18 @@ table.horizontalHeader().sectionClicked.connect(header_clicked_s)
 table2.horizontalHeader().sectionClicked.connect(header_clicked_l)
 # ---------------------------------------------------------------------------
 
-'''user_input = searchbar.text()
-for item in data_small:
-        if any(user_input in str(value).lower() for value in item.values()):
-            print(item)
-           #table.item(0, 0).setBackground(Qt.lightGray)
-'''
+def search(text):
+    for row in range(table.rowCount()): # for each row in the table
+        #row_match = False
+        for column in range(table.columnCount()): # for each column in the table
+            item = table.item(row, column) # searches for the item in row and column
+
+            if item:
+                match = text.lower() in item.text().lower()
+                #row_match = True
+                table.setRowHidden(row, not match)
+
+searchbar.textChanged.connect(search)
+    
+
 sys.exit(app.exec()) # exits program when the window is closed
