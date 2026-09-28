@@ -11,7 +11,8 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QLineEdit,
     QVBoxLayout,
-    QWidget
+    QWidget,
+    QLabel
 ) 
 from PySide6.QtCore import Qt
 
@@ -65,8 +66,41 @@ table2.setHorizontalHeaderLabels(["Id", "Nom", "Categorie", "Format", "Polygones
 searchbar = QLineEdit(placeholderText="Search...") # placeholder text for search bar
 container_layout = QVBoxLayout() # creating a layout for things that will be added to the window
 container_layout.addWidget(searchbar) # adding search bar to the layout
-container_layout.addWidget(table) # adding small table to the layout <<<<<<<<<<<<<<<<<<<<<<<<<<
+# -------------------------------------
+
+# Adding table widgets ----------------
+container_layout.addWidget(table) # adding small table to the layout <<<<<<<<<<<<<<<<<<<<<<<<<< change depending on if you wanna see small or large table
 container_layout.addWidget(table2) # adding large table to the layout <<<<<<<<<<<<<<<<<<<<<<<<<
+# -------------------------------------
+
+# Bottom Info Small table -------------------------
+file_name_s = Path("data_small.json").name # extracts the name of the file
+file_size_s = str(float(os.path.getsize("data_small.json"))) + (" Mb") # extracts the size of the small file in Mb (int)
+file_elements_s = str(len(data_small)) + (" elements in table") # extracts the number of items in the small table
+
+size_s = QLabel(file_size_s)
+name_s = QLabel(file_name_s)
+elements_s = QLabel(file_elements_s)
+
+def show_info_s(): # shows info of the small table
+    container_layout.addWidget(name_s)
+    container_layout.addWidget(size_s)
+    container_layout.addWidget(elements_s)
+# -------------------------------------
+
+# Bottom Info Large table -------------------------
+file_name_l = Path("data_large.json").name # extracts the name of the file
+file_size_l = str(os.path.getsize("data_large.json")) + (" Mb") # extracts the size of the large file in Mb (int)
+file_elements_l = str(len(data_large)) + (" elements in table") # extracts the number of items in the large table
+
+size_l = QLabel(file_size_l)
+name_l = QLabel(file_name_l)
+elements_l = QLabel(file_elements_l)
+
+def show_info_l(): # shows info of the large table
+    container_layout.addWidget(name_l)
+    container_layout.addWidget(size_l)
+    container_layout.addWidget(elements_l)
 # -------------------------------------
 
 # Adding search bar and table layout to the main widget --
@@ -103,68 +137,59 @@ def table_update_large():
         table2.setItem(i, 9, QTableWidgetItem(item["taille_fichier"]))
 # -----------------------------------------
 
-user_input = searchbar.text()
 
 table_update_small() # recalculates the placement of items in the small table
 table_update_large() # recalculates the placement of items in the large table
 
 
-#table.item(i, column).setBackground(Qt.lightGray)
 
-window.show()
+window.show() # shows the window
 
+# Sorting system small ------------------------------------------------------
+columns_s = ["id", "nom", "categorie", "format", "polygones", "statut"] # column indexes
+was_clicked_s= False # state of button (if it has been clicked) for the small table
 
-'''columns_s = ["id", "nom", "categorie", "format", "polygones", "statut"] # column indexes
-was_clicked = False
+def header_clicked_s(index):
 
-def header_clicked_s(index, was_clicked):
-    if was_clicked == False:
-        data_small.sort(key=lambda item:item[columns_s[index]])
-        was_clicked = True
+    global was_clicked_s # makes it possible to modify the variable outside of the function
+
+    if was_clicked_s == False: # was_clicked_s is used to switch between the sorting types
+        data_small.sort(key=lambda item:item[columns_s[index]]) # sorts items in the table (ascending order)
+        was_clicked_s = True
     else:
-         data_small.sort(key=lambda item:item[columns_s[index]], reverse=True)
-         was_clicked = False
+         data_small.sort(key=lambda item:item[columns_s[index]], reverse=True) # sorts items in the table (descending order)
+         was_clicked_s = False
 
     table_update_small()
-    print(was_clicked)
-'''
-        
-'''def header_clicked_l(index):
-    if index == 0:
-        data_large.sort(key=lambda item: item["id"])
-    elif index == 1:
-        data_large.sort(key=lambda item: item["nom"])
-    elif index == 2:
-        data_large.sort(key=lambda item: item["categorie"])
-    elif index == 3:
-        data_large.sort(key=lambda item: item["format"])
-    elif index == 4:
-        data_large.sort(key=lambda item: item["polygones"])
-    elif index == 5:
-        data_large.sort(key=lambda item: item["statut"])
-    elif index == 6:
-        data_large.sort(key=lambda item: item["auteur"])
-    elif index == 7:
-        data_large.sort(key=lambda item: item["date_creation"])
-    elif index == 8:
-        data_large.sort(key=lambda item: item["prix"])
-    elif index == 9:
-        data_large.sort(key=lambda item: item["taille_fichier"])
+# ---------------------------------------------------------------------------
+
+# Sorting system large ------------------------------------------------------
+columns_l = ["id", "nom", "categorie", "format", "polygones", "statut", "auteur", "date_creation", "prix", ] # column indexes
+was_clicked_l = False # state of button (if it has been clicked)
+
+def header_clicked_l(index):
+
+    global was_clicked_l # makes it possible to modify the variable outside of the function
+
+    if was_clicked_l == False: # was_clicked_l is used to switch between the sorting types
+        data_large.sort(key=lambda item:item[columns_l[index]]) # sorts items in the table (ascending order)
+        was_clicked_l = True
+    else:
+         data_large.sort(key=lambda item:item[columns_l[index]], reverse=True) # sorts items in the table (descending order)
+         was_clicked_l = False
 
     table_update_large()
-    window.show()
-'''
-#table.horizontalHeader().sectionClicked.connect(header_clicked_s)
-#table2.horizontalHeader().sectionClicked.connect(header_clicked_l)
+# ---------------------------------------------------------------------------
 
+# Sort when header label has been clicked -----------------------------------
+table.horizontalHeader().sectionClicked.connect(header_clicked_s)
+table2.horizontalHeader().sectionClicked.connect(header_clicked_l)
+# ---------------------------------------------------------------------------
 
-sys.exit(app.exec())
-
+'''user_input = searchbar.text()
+for item in data_small:
+        if any(user_input in str(value).lower() for value in item.values()):
+            print(item)
+           #table.item(0, 0).setBackground(Qt.lightGray)
 '''
-for i in data_small:
-    for key in i.keys():
-        print (key)
-        
-    for value in i.values():
-        print(value)
-'''
+sys.exit(app.exec()) # exits program when the window is closed
